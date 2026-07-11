@@ -1,3 +1,24 @@
 repo onde irei documentar uso de gatekeeper com k8s cluster kind
 
 kind create cluster --name kindzin --> (por padrao cria um docker container com seu control/data plane). Possivel passar config customizada, ex mais worker nodes, separar data de controlplane, --config kind.yaml
+
+
+------------------
+
+dei uma estudada no gatekeeper, helm template gatekeeper/gatekeeper | less
+
+- notas:
+2 deploy, 1 audit e outro q eh o coracao (controller / webhooks de validacao/mutating)
+
+- tem permissoes amplas pra patch do cabundle nas admission/mutating webhook configuration
+** pelo q claudiao e doc me disseram, tem um rotina embutida no controller que gerencia a rotacao/expiracao deste caBudle
+
+- cadastra ja ambos webhooks configs/svcs, so comecar a jogar os contraintTemplate/constraints
+
+- outra fita legal, kind provider onde e possivel adicioanr contexto de fora no admission review, questoes que nao vem de dentro. ex. validacao de imagens
+*admission review eh o objeto q o apiserver manda aos webhooks para os mesmos decidierem o que faze
+
+- cadastra resourcequota dando match na priorityclass system:critical. Pq raios?
+resp: o k8s nao deixa usarmos priority resreevadas em qq coisa, não é bagunça!! Com isso é usado este mecanismo para permitir a utilizacao de uma priorty desse nivel no seu workload/com um limite de resource para nao abusar.
+
+
