@@ -15,17 +15,33 @@ spec:
             labels:
               type: array
               items:
-                type: string
+                type: object
+                properties:
+                  key:
+                    type: string
+                  allowedRegex:
+                    type: string
   targets:
     - target: admission.k8s.gatekeeper.sh
       rego: |
         package k8srequiredlabels
 
+        # Falha se a CHAVE obrigatoria nao existir
         violation[{"msg": msg, "details": {"missing_labels": missing}}] {
           provided := {label | input.review.object.metadata.labels[label]}
-          required := {label | label := input.parameters.labels[_]}
+          required := {label | label := input.parameters.labels[_].key}
           missing := required - provided
           count(missing) > 0
           msg := sprintf("you must provide labels: %v", [missing])
+        }
+
+        # Falha se a chave existir mas o VALOR nao casar com o regex esperado
+        violation[{"msg": msg}] {
+          value := input.review.object.metadata.labels[key]
+          expected := input.parameters.labels[_]
+          expected.key == key
+          expected.allowedRegex != ""
+          not re_match(expected.allowedRegex, value)
+          msg := sprintf("label <%v: %v> does not satisfy allowed regex: %v", [key, value, expected.allowedRegex])
         }
 
