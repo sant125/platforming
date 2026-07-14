@@ -12,5 +12,7 @@ spec:
       - apiGroups: [""]
         kinds: ["Namespace"]
   parameters:
-    labels: ["istio-injection:true"]
+    labels:
+    - key: "istio-injection"
+      allowedRegex: "^enabled$"
 
