@@ -1,0 +1,15 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAllowedReposv2 
+metadata:
+  name: only-allowed-repos
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaceSelector:
+      matchLabels:
+        image-allowlist: enforce
+  parameters:
+    allowedImages: ["docker.io/santzindelas157/kindzin-eipiai/*", "santzindelas157/*"]
+

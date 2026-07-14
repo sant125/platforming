@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: eipiai
+  name: eipiai
+  namespace: image-registry-test 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eipiai
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: eipiai
+    spec:
+      containers:
+      - image: santzindelas157/kindzin-api:fixed
+        name: kindzin-eipiai
+        resources: {}
+status: {}
